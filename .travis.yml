@@ -1,0 +1,26 @@
+sudo: false
+language: java
+dist: trusty
+group: edge
+addons:
+  apt:
+    packages:
+      - oracle-java9-installer
+jdk: 
+ - oraclejdk8
+ - oraclejdk9
+before_cache:
+cache:
+  directories:
+    - $HOME/.m2
+env:
+  global:
+  - MAVEN_OPTS="-Xmx2g -Dmaven.test.failure.ignore=true -DskipTests=true -Dmaven.javadoc.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+  - DISPLAY=:99.0
+matrix:
+  - TARGET=photon
+  - TARGET=oxygen
+  - TARGET=luna
+script:
+- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+- mvn -B -fae -Dmaven.repo.local=$HOME/.m2/$BRANCH/repository -P$TARGET clean install"
